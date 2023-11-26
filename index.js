@@ -53,7 +53,7 @@ function findGrainBagSequence(capA, capB, goal) {
     const { state, steps } = queue.shift();
 
     if (state[0] + state[1] === goal) {
-      return steps;
+      return [[0, 0], ...steps];
     }
 
     const stateKey = state.join(",");
