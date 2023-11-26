@@ -43,3 +43,51 @@ rl.question("Please enter the path to the CSV file: ", function (filePath) {
     rl.close();
   });
 });
+
+// Main function
+function findGrainBagSequence(capA, capB, goal) {
+  const visited = new Set();
+  const queue = [{ state: [0, 0], steps: [] }];
+
+  while (queue.length > 0) {
+    const { state, steps } = queue.shift();
+
+    if (state[0] + state[1] === goal) {
+      return steps;
+    }
+
+    const stateKey = state.join(",");
+    if (visited.has(stateKey)) {
+      continue;
+    }
+    visited.add(stateKey);
+
+    // Operations
+    queue.push({
+      state: [capA, state[1]],
+      steps: [...steps, [capA, state[1]]],
+    });
+    queue.push({
+      state: [state[0], capB],
+      steps: [...steps, [state[0], capB]],
+    });
+    queue.push({ state: [0, state[1]], steps: [...steps, [0, state[1]]] });
+    queue.push({ state: [state[0], 0], steps: [...steps, [state[0], 0]] });
+
+    // Transfer A to B
+    let transfer = Math.min(state[0], capB - state[1]);
+    queue.push({
+      state: [state[0] - transfer, state[1] + transfer],
+      steps: [...steps, [state[0] - transfer, state[1] + transfer]],
+    });
+
+    // Transfer B to A
+    transfer = Math.min(state[1], capA - state[0]);
+    queue.push({
+      state: [state[0] + transfer, state[1] - transfer],
+      steps: [...steps, [state[0] + transfer, state[1] - transfer]],
+    });
+  }
+
+  return [["Impossible"]]; // No solution found
+}
